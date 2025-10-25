@@ -23,7 +23,7 @@ function App() {
     formData.append('image', selectedImage)
 
     try {
-      const response = await fetch('https://clearmark-backend.vercel.app/process', {
+      const response = await fetch('https://clearmark-backend.onrender.com/upload', {
         method: 'POST',
         body: formData,
       })
@@ -44,10 +44,12 @@ function App() {
 
   const handleDownload = () => {
     if (processedImage) {
-      const a = document.createElement('a')
-      a.href = processedImage
-      a.download = 'clearmark-result.png'
-      a.click()
+      const link = document.createElement('a')
+      link.href = processedImage
+      link.download = 'clearmark-result.png'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
     }
   }
 
@@ -55,16 +57,17 @@ function App() {
     setSelectedImage(null)
     setPreviewUrl(null)
     setProcessedImage(null)
+    setIsProcessing(false)
   }
 
   return (
-    <div className="app">
-      <header>
-        <h1>🎨 ClearMark</h1>
-        <p>Remove watermarks from your images with AI</p>
+    <div className="App">
+      <header className="App-header">
+        <h1>✨ ClearMark</h1>
+        <p>Remove watermarks from your images instantly</p>
       </header>
-
-      <main>
+      
+      <main className="container">
         {!previewUrl ? (
           <div className="upload-section">
             <div className="upload-box">
@@ -73,16 +76,18 @@ function App() {
                 accept="image/*"
                 onChange={handleImageSelect}
                 id="file-input"
+                style={{ display: 'none' }}
               />
-              <label htmlFor="file-input">
+              <label htmlFor="file-input" className="upload-label">
                 <div className="upload-icon">📁</div>
-                <p>Click to upload or drag and drop</p>
-                <span>PNG, JPG, JPEG (Max 10MB)</span>
+                <h2>Click to Upload Image</h2>
+                <p>or drag and drop</p>
+                <p className="file-types">PNG, JPG, or JPEG</p>
               </label>
             </div>
           </div>
         ) : (
-          <div className="preview-section">
+          <>
             <div className="image-container">
               <div className="image-box">
                 <h3>Original Image</h3>
@@ -96,7 +101,6 @@ function App() {
                 </div>
               )}
             </div>
-
             <div className="action-buttons">
               {!processedImage ? (
                 <>
@@ -118,10 +122,9 @@ function App() {
                 </>
               )}
             </div>
-          </div>
+          </>
         )}
       </main>
-
       <footer>
         <p>Made with ❤️ using AI | © 2025 ClearMark</p>
       </footer>
